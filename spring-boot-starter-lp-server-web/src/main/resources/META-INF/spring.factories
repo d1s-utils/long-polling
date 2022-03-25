@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  dev.d1s.lp.web.autoconfiguration.ControllerAutoConfiguration,\
+  dev.d1s.lp.web.autoconfiguration.SimpleSecurityAutoConfiguration

@@ -1,0 +1,11 @@
+{
+  "properties": [
+    {
+      "name": "long-polling-server.event-life-time",
+      "type": "java.lang.String",
+      "description": "The event's life time.",
+      "sourceType": "dev.d1s.lp.server.properties.LongPollingEventServerConfigurationProperties",
+      "defaultValue": "5s"
+    }
+  ]
+}
