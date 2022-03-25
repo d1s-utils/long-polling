@@ -52,7 +52,9 @@ internal class EventPollerImpl(
 
                     events.forEach { event ->
                         longPollingEventListenerRegistry[group, principal, type]?.listeners?.forEach { listener ->
-                            listener(event)
+                            launch {
+                                listener(event)
+                            }
                         }
                     }
 
