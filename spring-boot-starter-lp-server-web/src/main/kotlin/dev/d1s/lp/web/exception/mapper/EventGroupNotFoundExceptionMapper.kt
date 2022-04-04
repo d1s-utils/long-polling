@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.web.autoconfiguration
+package dev.d1s.lp.web.exception.mapper
 
-import dev.d1s.lp.web.controller.impl.LongPollingEventControllerImpl
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import dev.d1s.advice.domain.ErrorResponseData
+import dev.d1s.advice.mapper.ExceptionMapper
+import dev.d1s.lp.server.exception.EventGroupNotFoundException
+import org.springframework.http.HttpStatus
 
-@Configuration
-public class ControllerAutoConfiguration {
+internal class EventGroupNotFoundExceptionMapper : ExceptionMapper {
 
-    @Bean
-    internal fun longPollingEventController() = LongPollingEventControllerImpl()
+    override fun map(exception: Exception): ErrorResponseData? = if (exception is EventGroupNotFoundException) {
+        ErrorResponseData(HttpStatus.NOT_FOUND, exception.message!!)
+    } else {
+        null
+    }
 }
