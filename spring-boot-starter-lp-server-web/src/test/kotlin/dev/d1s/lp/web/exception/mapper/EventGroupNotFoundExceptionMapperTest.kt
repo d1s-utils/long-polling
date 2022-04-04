@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.web.controller.exception.mapper
+package dev.d1s.lp.web.exception.mapper
 
 import dev.d1s.advice.domain.ErrorResponseData
 import dev.d1s.lp.server.exception.EventGroupNotFoundException
-import dev.d1s.lp.web.exception.mapper.EventGroupNotFoundExceptionMapper
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
