@@ -73,7 +73,7 @@ internal class LongPollingEventServiceImpl(
                 ?: throw IllegalStateException("Server host is not present in the configuration.")
         ).resolve(path)
 
-    private fun <T : Any> getEvents(uri: URI): Set<LongPollingEvent<T>> {
+    private tailrec fun <T : Any> getEvents(uri: URI): Set<LongPollingEvent<T>> {
         val (_, _, result) = Fuel.get(uri.toString()).apply {
             configuration.authorization?.let {
                 header("Authorization" to it)
