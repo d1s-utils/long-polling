@@ -17,7 +17,6 @@
 package dev.d1s.lp.server.publisher
 
 import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.lp.commons.test.mockLongPollingEvent
 import dev.d1s.lp.server.publisher.impl.AsyncLongPollingEventPublisherImpl
 import dev.d1s.lp.server.service.LongPollingEventService
 import dev.d1s.teabag.testing.constant.VALID_STUB
@@ -41,12 +40,10 @@ internal class AsyncLongPollingEventPublisherImplTest {
     @MockkBean
     private lateinit var longPollingEventService: LongPollingEventService
 
-    private val event = mockLongPollingEvent
-
     @BeforeEach
     fun setup() {
         every {
-            longPollingEventService.add(event)
+            longPollingEventService.add(any())
         } returns setOf()
     }
 
