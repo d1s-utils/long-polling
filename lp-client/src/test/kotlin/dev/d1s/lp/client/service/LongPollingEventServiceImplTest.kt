@@ -60,8 +60,8 @@ internal class LongPollingEventServiceImplTest {
 
     private val eventBytes = realObjectMapper.writeValueAsBytes(event)
 
-    private val getEventsByGroupConcatenated = "https://d1s.dev/events/$VALID_STUB"
-    private val getEventsByPrincipalConcatenated = "https://d1s.dev/events/$VALID_STUB/$VALID_STUB"
+    private val getEventsByGroupConcatenated = "https://d1s.dev/api/events/$VALID_STUB"
+    private val getEventsByPrincipalConcatenated = "https://d1s.dev/api/events/$VALID_STUB/$VALID_STUB"
 
     @BeforeEach
     fun setup() {
