@@ -25,8 +25,9 @@ import dev.d1s.lp.server.service.LongPollingEventService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
-import java.time.Instant
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 @Service
@@ -42,6 +43,8 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
         cacheManager.getCache(LONG_POLLING_EVENT_CACHE)
     }
 
+    private val executor = Executors.newScheduledThreadPool(3)
+
     override fun add(longPollingEvent: LongPollingEvent<*>): Set<LongPollingEvent<*>> {
         return this.getSet(longPollingEvent.group, createGroup = true, copySet = false) {
             forEach {
@@ -51,6 +54,11 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
             }
 
             add(longPollingEvent)
+
+            executor.schedule({
+                Thread.sleep(properties.eventLifeTime.toMillis())
+                remove(longPollingEvent)
+            }, properties.eventLifeTime.toMillis(), TimeUnit.MILLISECONDS)
         }
     }
 
@@ -78,26 +86,17 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
         createGroup: Boolean = false,
         copySet: Boolean = true,
         cacheOperation: MutableSet<LongPollingEvent<*>>.() -> Unit
-    ): Set<LongPollingEvent<*>> {
+    ): Set<LongPollingEvent<*>> =
         eventCache[eventGroup]?.let {
             @Suppress("UNCHECKED_CAST")
-            val set = it.get()!! as MutableSet<LongPollingEvent<*>>
-
-            set.forEach { event ->
-                if (event.timestamp + properties.eventLifeTime < Instant.now()) {
-                    set.remove(event)
-                }
-            }
-
-            return this.alteredSet(copySet, cacheOperation, eventGroup, set)
+            this.alteredSet(copySet, cacheOperation, eventGroup, it.get()!! as MutableSet<LongPollingEvent<*>>)
         } ?: run {
             if (createGroup) {
-                return this.alteredSet(copySet, cacheOperation, eventGroup, CopyOnWriteArraySet())
+                this.alteredSet(copySet, cacheOperation, eventGroup, CopyOnWriteArraySet())
             } else {
                 throw EventGroupNotFoundException()
             }
         }
-    }
 
     private fun alteredSet(
         copySet: Boolean,
