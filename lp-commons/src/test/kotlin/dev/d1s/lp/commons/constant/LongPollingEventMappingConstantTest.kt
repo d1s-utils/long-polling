@@ -24,11 +24,11 @@ internal class LongPollingEventMappingConstantTest {
 
     @Test
     fun `should return valid mapping for getting events by group`() {
-        expectThat(GET_EVENTS_BY_GROUP_MAPPING) isEqualTo "/events/{group}"
+        expectThat(GET_EVENTS_BY_GROUP_MAPPING) isEqualTo "/api/events/{group}"
     }
 
     @Test
     fun `should return valid mapping for getting events by principal`() {
-        expectThat(GET_EVENTS_BY_PRINCIPAL_MAPPING) isEqualTo "/events/{group}/{principal}"
+        expectThat(GET_EVENTS_BY_PRINCIPAL_MAPPING) isEqualTo "/api/events/{group}/{principal}"
     }
 }
