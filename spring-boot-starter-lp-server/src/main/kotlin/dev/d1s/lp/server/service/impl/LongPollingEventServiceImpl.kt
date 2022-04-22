@@ -56,7 +56,6 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
             add(longPollingEvent)
 
             executor.schedule({
-                Thread.sleep(properties.eventLifeTime.toMillis())
                 remove(longPollingEvent)
             }, properties.eventLifeTime.toMillis(), TimeUnit.MILLISECONDS)
         }
