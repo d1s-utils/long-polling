@@ -23,4 +23,11 @@ public data class LongPollingEvent<T : Any>(
     val timestamp: Instant,
     val principal: String,
     val data: T
-)
+) {
+
+    override fun toString(): String =
+        "LongPollingEvent(" +
+                "group='$group', " +
+                "timestamp=$timestamp, " +
+                "principal='$principal')"
+}

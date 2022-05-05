@@ -18,6 +18,8 @@ package dev.d1s.lp.server.listener
 
 import dev.d1s.lp.commons.domain.LongPollingEvent
 import dev.d1s.lp.server.service.LongPollingEventService
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
 
@@ -26,8 +28,14 @@ internal class ApplicationEventListener {
     @Autowired
     private lateinit var longPollingEventService: LongPollingEventService
 
+    private val log = logger()
+
     @EventListener
     fun interceptEvent(longPollingEvent: LongPollingEvent<*>) {
+        log.lazyDebug {
+            "Handled an event from the Spring event bus: $longPollingEvent"
+        }
+
         longPollingEventService.add(longPollingEvent)
     }
 }

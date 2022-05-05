@@ -19,6 +19,8 @@ package dev.d1s.lp.server.publisher.impl
 import dev.d1s.lp.commons.domain.LongPollingEvent
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.lp.server.service.LongPollingEventService
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import java.time.Instant
@@ -30,6 +32,8 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
     @Autowired
     private lateinit var longPollingEventService: LongPollingEventService
 
+    private val log = logger()
+
     @Async
     override fun <T : Any> publish(group: String, principal: String, data: T): CompletableFuture<LongPollingEvent<T>> {
         val event = LongPollingEvent(
@@ -38,6 +42,10 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
             principal,
             data
         )
+
+        log.lazyDebug {
+            "Publishing the event asynchronously: $event"
+        }
 
         longPollingEventService.add(event)
 

@@ -22,6 +22,8 @@ import dev.d1s.lp.server.exception.EventGroupNotFoundException
 import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
 import dev.d1s.lp.server.properties.LongPollingEventServerConfigurationProperties
 import dev.d1s.lp.server.service.LongPollingEventService
+import dev.d1s.teabag.log4j.logger
+import dev.d1s.teabag.log4j.util.lazyDebug
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
@@ -45,6 +47,8 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
 
     private val executor = Executors.newScheduledThreadPool(3)
 
+    private val log = logger()
+
     override fun add(longPollingEvent: LongPollingEvent<*>): Set<LongPollingEvent<*>> {
         return this.getSet(longPollingEvent.group, createGroup = true, copySet = false) {
             forEach {
@@ -58,12 +62,20 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
             executor.schedule({
                 remove(longPollingEvent)
             }, properties.eventLifeTime.toMillis(), TimeUnit.MILLISECONDS)
+
+            log.lazyDebug {
+                "Event $longPollingEvent is now available from the long-polling API."
+            }
         }
     }
 
     override fun getByGroup(group: String): Set<LongPollingEvent<*>> =
         this.getSet(group) {
             removeAll(this)
+        }.also {
+            log.lazyDebug {
+                "Got all events associated by the provided group ($group): $it"
+            }
         }
 
     override fun getByPrincipal(group: String, principal: String): Set<LongPollingEvent<*>> {
@@ -75,6 +87,10 @@ internal class LongPollingEventServiceImpl : LongPollingEventService {
             }.toSet()
 
             removeAll(filteredSet)
+        }
+
+        log.lazyDebug {
+            "Got all events associated by the provided group and principal ($group, $principal): $filteredSet"
         }
 
         return filteredSet

@@ -5,6 +5,7 @@ dependencies {
     api(project(":lp-commons"))
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("dev.d1s.teabags:teabag-log4j:$teabagsVersion")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation(project(":lp-commons-test"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
