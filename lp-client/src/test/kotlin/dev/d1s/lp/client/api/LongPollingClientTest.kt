@@ -29,7 +29,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 
-internal class LongPollingClientTest {
+class LongPollingClientTest {
 
     private val longPollingEventListenerRegistry =
         mockLongPollingEventListenerRegistry

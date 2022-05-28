@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.constant
+package dev.d1s.lp.server.testUtil
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+import dev.d1s.lp.server.service.LongPollingEventService
+import io.mockk.every
 
-internal class CacheNameConstantTest {
-
-    @Test
-    fun `should return valid cache name`() {
-        expectThat(LONG_POLLING_EVENT_CACHE) isEqualTo "long-polling-event"
-    }
+internal fun LongPollingEventService.prepare() {
+    every {
+        add(any())
+    } returns setOf()
 }

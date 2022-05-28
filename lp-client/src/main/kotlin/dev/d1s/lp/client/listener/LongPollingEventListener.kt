@@ -16,6 +16,6 @@
 
 package dev.d1s.lp.client.listener
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 
 public typealias LongPollingEventListener<T> = suspend LongPollingEvent<T>.() -> Unit

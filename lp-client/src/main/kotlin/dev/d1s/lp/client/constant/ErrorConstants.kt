@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.exception
+package dev.d1s.lp.client.constant
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+internal const val SERVER_BASE_URL_NOT_CONFIGURED_ERROR =
+    "Server base URL is not present in the configuration."
 
-internal class IncompatibleEventDataTypeExceptionTest {
+internal const val POLL_FAILED_ERROR =
+    "Poll to %s failed: %s"
 
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(IncompatibleEventDataTypeException().message) isEqualTo
-                "Event group must contain events with the same type of data."
-    }
-}
+internal const val RECIPIENT_NOT_SET_ERROR =
+    "Recipient is not set. Please set it in the configuration."

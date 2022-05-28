@@ -17,12 +17,13 @@
 package dev.d1s.lp.client.poller.impl
 
 import dev.d1s.lp.client.configuration.EventPollerConfiguration
+import dev.d1s.lp.client.constant.RECIPIENT_NOT_SET_ERROR
 import dev.d1s.lp.client.factory.defaultEventPollerConfiguration
 import dev.d1s.lp.client.factory.longPollingEventService
 import dev.d1s.lp.client.poller.EventPoller
 import dev.d1s.lp.client.registry.LongPollingEventListenerRegistry
 import dev.d1s.lp.client.strategy.DelayCalculationStrategy
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.Delegates
@@ -51,27 +52,42 @@ internal class EventPollerImpl(
         coroutineScope {
             jobs += launch {
                 var events: Set<LongPollingEvent<T>> by Delegates.notNull()
-                val delayCalculationStrategy = eventPollerConfiguration.get().delayCalculationStrategy
+                val delayCalculationStrategy =
+                    eventPollerConfiguration.get().delayCalculationStrategy
+                val recipient =
+                    eventPollerConfiguration.get().recipient
+                        ?: throw IllegalStateException(
+                            RECIPIENT_NOT_SET_ERROR
+                        )
 
                 while (active) {
                     events = when (delayCalculationStrategy) {
                         is DelayCalculationStrategy.Fixed -> {
-                            longPollingEventService.getEvents(group, principal)
+                            longPollingEventService.getEvents(
+                                group,
+                                principal,
+                                recipient
+                            )
                         }
 
                         is DelayCalculationStrategy.Adjusted -> {
                             delayCalculationStrategy.measure {
-                                longPollingEventService.getEvents(group, principal)
+                                longPollingEventService.getEvents(
+                                    group,
+                                    principal,
+                                    recipient
+                                )
                             }
                         }
                     }
 
                     events.forEach { event ->
-                        longPollingEventListenerRegistry[group, principal, type]?.listeners?.forEach { listener ->
-                            launch {
-                                listener(event)
+                        longPollingEventListenerRegistry[group, principal, type]
+                            ?.listeners?.forEach { listener ->
+                                launch {
+                                    listener(event)
+                                }
                             }
-                        }
                     }
 
                     delay(delayCalculationStrategy.delay.toMillis())
@@ -95,4 +111,7 @@ internal class EventPollerImpl(
     override fun stopPolling() {
         active = false
     }
+
+    override fun availableGroups(): Set<String> =
+        longPollingEventService.getAvailableGroups()
 }

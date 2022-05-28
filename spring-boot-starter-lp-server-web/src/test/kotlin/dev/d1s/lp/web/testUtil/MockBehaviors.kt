@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.web.exception.mapper
+package dev.d1s.lp.web.testUtil
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.advice.mapper.ExceptionMapper
-import dev.d1s.lp.server.exception.EventGroupNotFoundException
-import org.springframework.http.HttpStatus
+import dev.d1s.lp.commons.test.mockLongPollingEvent
+import dev.d1s.lp.server.service.LongPollingEventService
+import dev.d1s.teabag.testing.constant.VALID_STUB
+import io.mockk.every
 
-internal class EventGroupNotFoundExceptionMapper : ExceptionMapper {
+val eventSet = setOf(mockLongPollingEvent)
 
-    override fun map(exception: Exception): ErrorResponseData? = if (exception is EventGroupNotFoundException) {
-        ErrorResponseData(HttpStatus.NOT_FOUND, exception.message!!)
-    } else {
-        null
-    }
+fun LongPollingEventService.prepare() {
+    every {
+        getByGroup(
+            VALID_STUB,
+            VALID_STUB
+        )
+    } returns eventSet
+
+    every {
+        getByPrincipal(
+            VALID_STUB,
+            VALID_STUB,
+            VALID_STUB
+        )
+    } returns eventSet
+
+    every {
+        getAvailableGroups()
+    } returns setOf(VALID_STUB)
 }

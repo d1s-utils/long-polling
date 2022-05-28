@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.commons.domain
+package dev.d1s.lp.web.exception.mapper
 
-import java.time.Instant
+import dev.d1s.advice.entity.ErrorResponseData
+import dev.d1s.advice.mapper.ExceptionMapper
+import dev.d1s.lp.server.exception.UnavailableEventGroupException
+import org.springframework.http.HttpStatus
 
-public data class LongPollingEvent<T : Any>(
-    val group: String,
-    val timestamp: Instant,
-    val principal: String?,
-    val data: T
-) {
+internal class UnavailableEventGroupExceptionMapper : ExceptionMapper {
 
-    override fun toString(): String =
-        "LongPollingEvent(" +
-                "group='$group', " +
-                "timestamp=$timestamp, " +
-                "principal='$principal')"
+    override fun map(exception: Exception): ErrorResponseData? =
+        (exception as? UnavailableEventGroupException)?.let {
+            ErrorResponseData(
+                HttpStatus.BAD_REQUEST,
+                it.message!!
+            )
+        }
 }

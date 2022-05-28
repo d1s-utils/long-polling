@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.autoconfiguration
+package dev.d1s.lp.commons.entity
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import java.time.Instant
 
-@Configuration
-public class CacheManagerAutoConfiguration {
+public data class LongPollingEvent<T : Any>(
+    val group: String,
+    val principal: String?,
+    val data: T,
+    val satisfiedRecipients: MutableSet<String>,
+    val timestamp: Instant,
+) {
+    lateinit var id: String
 
-    @Bean
-    @ConditionalOnMissingBean
-    internal fun cacheManager() = ConcurrentMapCacheManager()
+    override fun toString(): String =
+        "LongPollingEvent(" +
+                "id=$id, " +
+                "group='$group', " +
+                "principal=$principal, " +
+                "satisfiedRecipients=$satisfiedRecipients, " +
+                "timestamp=$timestamp)"
 }

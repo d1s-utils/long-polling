@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.properties
+package dev.d1s.lp.web.exception.mapper
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
-import java.time.Duration
+import dev.d1s.advice.entity.ErrorResponseData
+import dev.d1s.advice.mapper.ExceptionMapper
+import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
+import org.springframework.http.HttpStatus
 
-class LongPollingEventServerConfigurationPropertiesTest {
+internal class IncompatibleEventDataTypeExceptionMapper : ExceptionMapper {
 
-    @Test
-    fun `should return valid default eventLifeTime value`() {
-        expectThat(LongPollingEventServerConfigurationProperties().eventLifetime) isEqualTo
-                Duration.ofSeconds(5)
-    }
+    override fun map(exception: Exception): ErrorResponseData? =
+        (exception as? IncompatibleEventDataTypeException)?.let {
+            ErrorResponseData(
+                HttpStatus.BAD_REQUEST,
+                it.message!!
+            )
+        }
 }

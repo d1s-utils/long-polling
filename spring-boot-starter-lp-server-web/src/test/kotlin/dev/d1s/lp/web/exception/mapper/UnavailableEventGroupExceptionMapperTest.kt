@@ -14,38 +14,33 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.listener
+package dev.d1s.lp.web.exception.mapper
 
-import com.ninjasquad.springmockk.MockkBean
-import dev.d1s.lp.commons.test.mockLongPollingEvent
-import dev.d1s.lp.server.service.LongPollingEventService
-import io.mockk.verify
+import dev.d1s.advice.entity.ErrorResponseData
+import dev.d1s.lp.server.constant.UNAVAILABLE_EVENT_GROUP_ERROR
+import dev.d1s.lp.server.exception.UnavailableEventGroupException
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
+import strikt.api.expectThat
+import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [ApplicationEventListener::class])
-class ApplicationEventListenerTest {
+@ContextConfiguration(classes = [UnavailableEventGroupExceptionMapper::class])
+class UnavailableEventGroupExceptionMapperTest {
 
     @Autowired
-    private lateinit var applicationEventListener: ApplicationEventListener
-
-    @MockkBean(relaxed = true)
-    private lateinit var longPollingEventService: LongPollingEventService
-
-    private val event = mockLongPollingEvent
+    private lateinit var mapper: UnavailableEventGroupExceptionMapper
 
     @Test
-    fun `should intercept the event`() {
-        assertDoesNotThrow {
-            applicationEventListener.interceptEvent(event)
-        }
-
-        verify {
-            longPollingEventService.add(event)
-        }
+    fun `should map UnavailableEventGroupException to valid response`() {
+        expectThat(
+            mapper.map(UnavailableEventGroupException)
+        ) isEqualTo ErrorResponseData(
+            HttpStatus.BAD_REQUEST,
+            UNAVAILABLE_EVENT_GROUP_ERROR
+        )
     }
 }

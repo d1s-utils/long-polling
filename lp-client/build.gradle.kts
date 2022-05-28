@@ -8,7 +8,6 @@ val junitVersion: String by project
 dependencies {
     api(project(":lp-commons"))
     implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    implementation("org.slf4j:slf4j-simple:$slf4jVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")

@@ -19,12 +19,18 @@ package dev.d1s.lp.client.service.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError
+import com.github.kittinunf.fuel.core.Request
 import dev.d1s.lp.client.configuration.EventPollerConfiguration
+import dev.d1s.lp.client.constant.POLL_FAILED_ERROR
+import dev.d1s.lp.client.constant.SERVER_BASE_URL_NOT_CONFIGURED_ERROR
 import dev.d1s.lp.client.exception.PollFailedException
 import dev.d1s.lp.client.factory.objectMapper
 import dev.d1s.lp.client.service.LongPollingEventService
 import dev.d1s.lp.client.strategy.FallbackStrategy
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.constant.GET_EVENTS_BY_GROUP_MAPPING
+import dev.d1s.lp.commons.constant.GET_EVENTS_BY_PRINCIPAL_MAPPING
+import dev.d1s.lp.commons.constant.GET_EVENT_GROUPS_MAPPING
+import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.teabag.stdlib.text.replacePlaceholder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -41,43 +47,84 @@ internal class LongPollingEventServiceImpl(
 
     override fun <T : Any> getEvents(
         group: String,
-        principal: String?
+        principal: String?,
+        recipient: String
     ): Set<LongPollingEvent<T>> =
         principal?.let {
-            this.getByPrincipal(group, principal)
-        } ?: this.getByGroup(group)
+            this.getByPrincipal(group, principal, recipient)
+        } ?: this.getByGroup(group, recipient)
 
-    private fun <T : Any> getByGroup(group: String): Set<LongPollingEvent<T>> =
-        this.getEvents(
-            resolvePath(
-                configuration.getEventsByGroupPath
-                    .setGroup(group)
-            )
+    override fun getAvailableGroups(): Set<String> {
+        val uri = this.resolvePath(
+            GET_EVENT_GROUPS_MAPPING
         )
 
-    private fun <T : Any> getByPrincipal(group: String, principal: String): Set<LongPollingEvent<T>> =
+        val (_, _, result) = Fuel.get(
+            uri.toString()
+        ).apply {
+            setAuthorization()
+        }.response()
+
+        val (bytes, error) = result
+
+        error?.let {
+            fail(uri, error)
+        }
+
+        return mapper.readValue(
+            bytes!!,
+            object : TypeReference<Set<String>>() {}
+        )
+    }
+
+    private fun <T : Any> getByGroup(
+        group: String,
+        recipient: String
+    ): Set<LongPollingEvent<T>> =
         this.getEvents(
-            resolvePath(
-                configuration.getEventsByPrincipalPath
+            this.resolvePath(
+                GET_EVENTS_BY_GROUP_MAPPING
+                    .setGroup(group)
+            ),
+            recipient
+        )
+
+    private fun <T : Any> getByPrincipal(
+        group: String,
+        principal: String,
+        recipient: String
+    ): Set<LongPollingEvent<T>> =
+        this.getEvents(
+            this.resolvePath(
+                GET_EVENTS_BY_PRINCIPAL_MAPPING
                     .setGroup(group)
                     .setPrincipal(principal)
-            )
+            ),
+            recipient
         )
 
-    private fun String.setGroup(group: String) = this.replacePlaceholder("group" to group)
-    private fun String.setPrincipal(principal: String) = this.replacePlaceholder("principal" to principal)
+    private fun String.setGroup(group: String) =
+        this.replacePlaceholder("group" to group)
+
+    private fun String.setPrincipal(principal: String) =
+        this.replacePlaceholder("principal" to principal)
 
     private fun resolvePath(path: String): URI =
         URI(
-            configuration.host
-                ?: throw IllegalStateException("Server host is not present in the configuration.")
+            configuration.baseUrl
+                ?: throw IllegalStateException(
+                    SERVER_BASE_URL_NOT_CONFIGURED_ERROR
+                )
         ).resolve(path)
 
-    private tailrec fun <T : Any> getEvents(uri: URI): Set<LongPollingEvent<T>> {
-        val (_, _, result) = Fuel.get(uri.toString()).apply {
-            configuration.authorization?.let {
-                header("Authorization" to it)
-            }
+    private fun <T : Any> getEvents(uri: URI, recipient: String): Set<LongPollingEvent<T>> {
+        val (_, _, result) = Fuel.get(
+            uri.toString(),
+            listOf(
+                RECIPIENT_PARAMETER to recipient
+            )
+        ).apply {
+            setAuthorization()
         }.response()
 
         // literally golang
@@ -102,7 +149,7 @@ internal class LongPollingEventServiceImpl(
                         delay(delay.toMillis())
                     }
 
-                    return this.getEvents(uri)
+                    return this.getEvents(uri, recipient)
                 }
             }
         }
@@ -114,6 +161,20 @@ internal class LongPollingEventServiceImpl(
     }
 
     private fun fail(uri: URI, fuelError: FuelError) {
-        throw PollFailedException("Poll to $uri has been failed: $fuelError")
+        throw PollFailedException(
+            POLL_FAILED_ERROR.format(uri, fuelError)
+        )
+    }
+
+    private fun Request.setAuthorization() {
+        configuration.authorization?.let {
+            header(AUTHORIZATION_HEADER to it)
+        }
+    }
+
+    private companion object {
+        private const val AUTHORIZATION_HEADER = "Authorization"
+
+        private const val RECIPIENT_PARAMETER = "recipient"
     }
 }

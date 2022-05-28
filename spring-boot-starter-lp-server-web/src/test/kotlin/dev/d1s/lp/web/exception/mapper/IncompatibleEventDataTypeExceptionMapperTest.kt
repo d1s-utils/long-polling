@@ -16,8 +16,9 @@
 
 package dev.d1s.lp.web.exception.mapper
 
-import dev.d1s.advice.domain.ErrorResponseData
-import dev.d1s.lp.server.exception.EventGroupNotFoundException
+import dev.d1s.advice.entity.ErrorResponseData
+import dev.d1s.lp.server.constant.INCOMPATIBLE_EVENT_DATA_TYPE_ERROR
+import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -27,20 +28,19 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 @SpringBootTest
-@ContextConfiguration(classes = [EventGroupNotFoundExceptionMapper::class])
-internal class EventGroupNotFoundExceptionMapperTest {
+@ContextConfiguration(classes = [IncompatibleEventDataTypeExceptionMapper::class])
+class IncompatibleEventDataTypeExceptionMapperTest {
 
     @Autowired
-    private lateinit var mapper: EventGroupNotFoundExceptionMapper
+    private lateinit var mapper: IncompatibleEventDataTypeExceptionMapper
 
     @Test
-    fun `should map EventGroupNotFoundException to valid response`() {
-        val testException = EventGroupNotFoundException()
+    fun `should map IncompatibleEventDataTypeException to valid response`() {
         expectThat(
-            mapper.map(testException)
+            mapper.map(IncompatibleEventDataTypeException)
         ) isEqualTo ErrorResponseData(
-            HttpStatus.NOT_FOUND,
-            testException.message!!
+            HttpStatus.BAD_REQUEST,
+            INCOMPATIBLE_EVENT_DATA_TYPE_ERROR
         )
     }
 }

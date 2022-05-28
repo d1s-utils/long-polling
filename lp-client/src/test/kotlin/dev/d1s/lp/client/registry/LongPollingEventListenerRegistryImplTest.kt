@@ -25,7 +25,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class LongPollingEventListenerRegistryImplTest {
+class LongPollingEventListenerRegistryImplTest {
 
     @Test
     fun `should add and get the event listener`() {

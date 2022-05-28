@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.exception
+package dev.d1s.lp.server.constant
 
-import org.junit.jupiter.api.Test
-import strikt.api.expectThat
-import strikt.assertions.isEqualTo
+public const val INCOMPATIBLE_EVENT_DATA_TYPE_ERROR: String =
+    "Event group must contain events with the same type of data."
 
-internal class LongPollingEventGroupNotFoundExceptionTest {
-
-    @Test
-    fun `should return valid exception message`() {
-        expectThat(EventGroupNotFoundException().message) isEqualTo
-                "LongPollingEvent group was not found."
-    }
-}
+public const val UNAVAILABLE_EVENT_GROUP_ERROR: String =
+    "Event group is unavailable."

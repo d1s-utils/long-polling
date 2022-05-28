@@ -16,7 +16,7 @@
 
 package dev.d1s.lp.web.controller.impl
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.service.LongPollingEventService
 import dev.d1s.lp.web.controller.LongPollingEventController
 import dev.d1s.security.configuration.annotation.Secured
@@ -30,10 +30,21 @@ internal class LongPollingEventControllerImpl : LongPollingEventController {
     private lateinit var longPollingEventService: LongPollingEventService
 
     @Secured
-    override fun getByGroup(group: String): Set<LongPollingEvent<*>> =
-        longPollingEventService.getByGroup(group)
+    override fun getByGroup(
+        group: String,
+        recipient: String
+    ): Set<LongPollingEvent<*>> =
+        longPollingEventService.getByGroup(group, recipient)
 
     @Secured
-    override fun getByPrincipal(group: String, principal: String): Set<LongPollingEvent<*>> =
-        longPollingEventService.getByPrincipal(group, principal)
+    override fun getByPrincipal(
+        group: String,
+        principal: String,
+        recipient: String
+    ): Set<LongPollingEvent<*>> =
+        longPollingEventService.getByPrincipal(group, principal, recipient)
+
+    @Secured
+    override fun getEventGroups(): Set<String> =
+        longPollingEventService.getAvailableGroups()
 }

@@ -16,7 +16,7 @@
 
 package dev.d1s.lp.server.publisher.impl
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.lp.server.service.LongPollingEventService
 import dev.d1s.teabag.log4j.logger
@@ -26,7 +26,7 @@ import org.springframework.scheduling.annotation.Async
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
-// is open really needed? I'm using a plugin for Kotlin support, but Intellij warns me anyway.
+// is 'open' really needed? I'm using a plugin for Kotlin support, but Intellij warns me anyway.
 internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPublisher {
 
     @Autowired
@@ -38,9 +38,10 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
     override fun <T : Any> publish(group: String, principal: String?, data: T): CompletableFuture<LongPollingEvent<T>> {
         val event = LongPollingEvent(
             group,
-            Instant.now(),
             principal,
-            data
+            data,
+            mutableSetOf(),
+            Instant.now()
         )
 
         log.lazyDebug {

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-internal class LongPollingEventMappingConstantTest {
+class LongPollingEventMappingConstantTest {
 
     @Test
     fun `should return valid mapping for getting events by group`() {

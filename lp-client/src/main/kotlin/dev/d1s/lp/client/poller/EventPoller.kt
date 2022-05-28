@@ -31,4 +31,6 @@ internal interface EventPoller {
     fun updateConfiguration(configuration: EventPollerConfiguration.() -> Unit)
 
     fun stopPolling()
+
+    fun availableGroups(): Set<String>
 }

@@ -19,8 +19,8 @@ package dev.d1s.lp.server.publisher
 import com.ninjasquad.springmockk.MockkBean
 import dev.d1s.lp.server.publisher.impl.AsyncLongPollingEventPublisherImpl
 import dev.d1s.lp.server.service.LongPollingEventService
+import dev.d1s.lp.server.testUtil.prepare
 import dev.d1s.teabag.testing.constant.VALID_STUB
-import io.mockk.every
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -32,7 +32,7 @@ import strikt.assertions.isEqualTo
 
 @SpringBootTest
 @ContextConfiguration(classes = [AsyncLongPollingEventPublisherImpl::class])
-internal class AsyncLongPollingEventPublisherImplTest {
+class AsyncLongPollingEventPublisherImplTest {
 
     @Autowired
     private lateinit var publisher: AsyncLongPollingEventPublisherImpl
@@ -42,9 +42,7 @@ internal class AsyncLongPollingEventPublisherImplTest {
 
     @BeforeEach
     fun setup() {
-        every {
-            longPollingEventService.add(any())
-        } returns setOf()
+        longPollingEventService.prepare()
     }
 
     @Test

@@ -24,8 +24,10 @@ import dev.d1s.lp.client.listener.LongPollingEventListener
 
 public class LongPollingClient {
 
-    private val longPollingEventListenerRegistry = longPollingEventListenerRegistry()
-    private val eventPoller = eventPoller(longPollingEventListenerRegistry)
+    private val longPollingEventListenerRegistry =
+        longPollingEventListenerRegistry()
+    private val eventPoller =
+        eventPoller(longPollingEventListenerRegistry)
     private val longPollingEventListenerConfigurer =
         longPollingEventListenerConfigurer(longPollingEventListenerRegistry, eventPoller)
 
@@ -35,7 +37,12 @@ public class LongPollingClient {
         type: Class<T>,
         listener: LongPollingEventListener<T>
     ) {
-        longPollingEventListenerConfigurer.configureListener(group, principal, type, listener)
+        longPollingEventListenerConfigurer.configureListener(
+            group,
+            principal,
+            type,
+            listener
+        )
     }
 
     public suspend inline fun <reified T : Any> onEvent(
@@ -43,14 +50,24 @@ public class LongPollingClient {
         principal: String? = null,
         noinline listener: LongPollingEventListener<T>
     ) {
-        this.onEvent(group, principal, T::class.java, listener)
+        this.onEvent(
+            group,
+            principal,
+            T::class.java,
+            listener
+        )
     }
+
+    public fun availableGroups(): Set<String> =
+        eventPoller.availableGroups()
 
     public fun block() {
         eventPoller.block()
     }
 
-    public fun updateConfiguration(configuration: EventPollerConfiguration.() -> Unit) {
+    public fun updateConfiguration(
+        configuration: EventPollerConfiguration.() -> Unit
+    ) {
         eventPoller.updateConfiguration(configuration)
     }
 

@@ -16,4 +16,7 @@
 
 package dev.d1s.lp.server.exception
 
-public class EventGroupNotFoundException : RuntimeException("LongPollingEvent group was not found.")
+import dev.d1s.lp.server.constant.UNAVAILABLE_EVENT_GROUP_ERROR
+
+public object UnavailableEventGroupException :
+    RuntimeException(UNAVAILABLE_EVENT_GROUP_ERROR)

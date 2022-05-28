@@ -16,122 +16,129 @@
 
 package dev.d1s.lp.server.service.impl
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
-import dev.d1s.lp.server.constant.LONG_POLLING_EVENT_CACHE
-import dev.d1s.lp.server.exception.EventGroupNotFoundException
+import dev.d1s.lp.commons.entity.LongPollingEvent
+import dev.d1s.lp.server.configurer.LongPollingServerConfigurer
 import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
+import dev.d1s.lp.server.exception.UnavailableEventGroupException
 import dev.d1s.lp.server.properties.LongPollingEventServerConfigurationProperties
 import dev.d1s.lp.server.service.LongPollingEventService
 import dev.d1s.teabag.log4j.logger
 import dev.d1s.teabag.log4j.util.lazyDebug
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Service
-import java.util.concurrent.CopyOnWriteArraySet
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
+import java.time.Instant
+import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Service
-internal class LongPollingEventServiceImpl : LongPollingEventService {
-
-    @Autowired
-    private lateinit var cacheManager: CacheManager
+internal class LongPollingEventServiceImpl : LongPollingEventService, InitializingBean {
 
     @Autowired
     private lateinit var properties: LongPollingEventServerConfigurationProperties
 
-    private val eventCache by lazy {
-        cacheManager.getCache(LONG_POLLING_EVENT_CACHE)
-    }
+    @Autowired
+    private lateinit var longPollingServerConfigurer: LongPollingServerConfigurer
 
-    private val executor = Executors.newScheduledThreadPool(3)
+    @Autowired
+    private lateinit var scheduler: ThreadPoolTaskScheduler
+
+    private val events = CopyOnWriteArrayList<LongPollingEvent<*>>()
+
+    private lateinit var availableGroups: Set<String>
 
     private val log = logger()
 
     override fun add(longPollingEvent: LongPollingEvent<*>): Set<LongPollingEvent<*>> {
-        return this.getSet(longPollingEvent.group, createGroup = true, copySet = false) {
-            forEach {
-                if (it.data::class != longPollingEvent.data::class) {
-                    throw IncompatibleEventDataTypeException()
-                }
-            }
-
-            add(longPollingEvent)
-
-            executor.schedule({
-                remove(longPollingEvent)
-            }, properties.eventLifeTime.toMillis(), TimeUnit.MILLISECONDS)
-
-            log.lazyDebug {
-                "Event $longPollingEvent is now available from the long-polling API."
-            }
+        log.lazyDebug {
+            "adding event $longPollingEvent"
         }
-    }
 
-    override fun getByGroup(group: String): Set<LongPollingEvent<*>> =
-        this.getSet(group) {
-            removeAll(this)
-        }.also {
-            log.lazyDebug {
-                "Got all events associated by the provided group ($group): $it"
+        longPollingEvent.group.checkGroup()
+
+        events.forEach {
+            if (it.data::class != longPollingEvent.data::class) {
+                throw IncompatibleEventDataTypeException
             }
         }
 
-    override fun getByPrincipal(group: String, principal: String): Set<LongPollingEvent<*>> {
-        var filteredSet: Set<LongPollingEvent<*>> by Delegates.notNull()
+        longPollingEvent.id = UUID.randomUUID().toString()
 
-        this.getSet(group) {
-            filteredSet = filter {
-                it.principal == principal
-            }.toSet()
-
-            removeAll(filteredSet)
-        }
+        events += longPollingEvent
 
         log.lazyDebug {
-            "Got all events associated by the provided group and principal ($group, $principal): $filteredSet"
+            "added event $longPollingEvent, scheduling for deletion. " +
+                    "(event lifetime: ${properties.eventLifetime})"
         }
 
-        return filteredSet
+        scheduler.schedule(
+            {
+                log.lazyDebug {
+                    "deleting event $longPollingEvent"
+                }
+
+                events.remove(longPollingEvent)
+            },
+            Instant.now() + properties.eventLifetime
+        )
+
+        return events.toSet()
     }
 
-    private fun getSet(
-        eventGroup: String,
-        createGroup: Boolean = false,
-        copySet: Boolean = true,
-        cacheOperation: MutableSet<LongPollingEvent<*>>.() -> Unit
-    ): Set<LongPollingEvent<*>> =
-        eventCache[eventGroup]?.let {
-            @Suppress("UNCHECKED_CAST")
-            this.alteredSet(copySet, cacheOperation, eventGroup, it.get()!! as MutableSet<LongPollingEvent<*>>)
-        } ?: run {
-            if (createGroup) {
-                this.alteredSet(copySet, cacheOperation, eventGroup, CopyOnWriteArraySet())
-            } else {
-                throw EventGroupNotFoundException()
+    override fun getByGroup(group: String, recipient: String): Set<LongPollingEvent<*>> {
+        group.checkGroup()
+
+        return events.filter {
+            it.group == group && !it.satisfiedRecipients.contains(recipient)
+        }.toSet().also {
+            it.setSatisfiedRecipient(recipient)
+
+            log.lazyDebug {
+                "returning events for group $group and recipient $recipient: $it"
             }
         }
+    }
 
-    private fun alteredSet(
-        copySet: Boolean,
-        cacheOperation: MutableSet<LongPollingEvent<*>>.() -> Unit,
-        eventGroup: String,
-        originSet: MutableSet<LongPollingEvent<*>>
+    override fun getByPrincipal(
+        group: String,
+        principal: String,
+        recipient: String
     ): Set<LongPollingEvent<*>> {
-        var copiedSet: Set<LongPollingEvent<*>> by Delegates.notNull()
+        group.checkGroup()
 
-        if (copySet) {
-            copiedSet = originSet.toSet()
+        return events.filter {
+            it.group == group
+                    && it.principal == principal
+                    && !it.satisfiedRecipients.contains(recipient)
+        }.toSet().also {
+            it.setSatisfiedRecipient(recipient)
+
+            log.lazyDebug {
+                "returning events for group $group, principal $principal and recipient $recipient: $it"
+            }
         }
+    }
 
-        cacheOperation(originSet)
-        eventCache.put(eventGroup, originSet)
+    override fun getAvailableGroups(): Set<String> = availableGroups
 
-        return if (copySet) {
-            copiedSet
-        } else {
-            originSet
+    override fun afterPropertiesSet() {
+        availableGroups = longPollingServerConfigurer.getAvailableGroups()
+
+        log.lazyDebug {
+            "initialized available long polling groups: $availableGroups"
+        }
+    }
+
+    private fun Set<LongPollingEvent<*>>.setSatisfiedRecipient(recipient: String) {
+        this.forEach {
+            it.satisfiedRecipients += recipient
+        }
+    }
+
+    private fun String.checkGroup() {
+        if (!availableGroups.contains(this)) {
+            throw UnavailableEventGroupException
         }
     }
 }

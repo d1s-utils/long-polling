@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.constant
+package dev.d1s.lp.server.configurer
 
-internal const val LONG_POLLING_EVENT_CACHE = "long-polling-event"
+public interface LongPollingServerConfigurer {
+
+    public fun getAvailableGroups(): Set<String>
+}

@@ -18,7 +18,8 @@ package dev.d1s.lp.web.autoconfiguration
 
 import dev.d1s.advice.mapper.ExceptionMapper
 import dev.d1s.lp.web.controller.impl.LongPollingEventControllerImpl
-import dev.d1s.lp.web.exception.mapper.EventGroupNotFoundExceptionMapper
+import dev.d1s.lp.web.exception.mapper.IncompatibleEventDataTypeExceptionMapper
+import dev.d1s.lp.web.exception.mapper.UnavailableEventGroupExceptionMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -30,6 +31,10 @@ public class WebServerAutoConfiguration {
         LongPollingEventControllerImpl()
 
     @Bean
-    internal fun eventGroupNotFoundExceptionMapper(): ExceptionMapper =
-        EventGroupNotFoundExceptionMapper()
+    internal fun incompatibleEventDataTypeExceptionMapper(): ExceptionMapper =
+        IncompatibleEventDataTypeExceptionMapper()
+
+    @Bean
+    internal fun unavailableEventGroupExceptionMapper(): ExceptionMapper =
+        UnavailableEventGroupExceptionMapper()
 }

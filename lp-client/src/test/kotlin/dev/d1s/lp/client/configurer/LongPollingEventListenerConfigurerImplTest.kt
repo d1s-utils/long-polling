@@ -26,7 +26,7 @@ import io.mockk.coVerify
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
-internal class LongPollingEventListenerConfigurerImplTest {
+class LongPollingEventListenerConfigurerImplTest {
 
     private val longPollingEventListenerRegistry =
         mockLongPollingEventListenerRegistry

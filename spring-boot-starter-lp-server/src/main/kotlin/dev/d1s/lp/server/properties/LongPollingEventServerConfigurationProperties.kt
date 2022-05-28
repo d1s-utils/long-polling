@@ -26,5 +26,7 @@ import javax.validation.constraints.NotNull
 @ConstructorBinding
 @ConfigurationProperties("long-polling-server")
 public data class LongPollingEventServerConfigurationProperties(
-    @NotNull val eventLifeTime: Duration = Duration.ofSeconds(5)
+    @NotNull
+    val eventLifetime: Duration =
+        Duration.ofSeconds(5)
 )

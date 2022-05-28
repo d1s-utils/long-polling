@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package dev.d1s.lp.server.properties
+package dev.d1s.lp.server.constant
 
 import org.junit.jupiter.api.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
-import java.time.Duration
 
-class LongPollingEventServerConfigurationPropertiesTest {
+internal class ErrorConstantsTest {
 
     @Test
-    fun `should return valid default eventLifeTime value`() {
-        expectThat(LongPollingEventServerConfigurationProperties().eventLifetime) isEqualTo
-                Duration.ofSeconds(5)
+    fun `should return valid error messages`() {
+        expectThat(
+            INCOMPATIBLE_EVENT_DATA_TYPE_ERROR
+        ) isEqualTo "Event group must contain events with the same type of data."
+
+        expectThat(
+            UNAVAILABLE_EVENT_GROUP_ERROR
+        ) isEqualTo "Event group is unavailable."
     }
 }

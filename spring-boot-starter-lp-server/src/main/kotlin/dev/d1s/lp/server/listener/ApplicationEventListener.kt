@@ -16,7 +16,7 @@
 
 package dev.d1s.lp.server.listener
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.service.LongPollingEventService
 import dev.d1s.teabag.log4j.logger
 import dev.d1s.teabag.log4j.util.lazyDebug

@@ -16,13 +16,24 @@
 
 package dev.d1s.lp.server.service
 
-import dev.d1s.lp.commons.domain.LongPollingEvent
+import dev.d1s.lp.commons.entity.LongPollingEvent
 
 public interface LongPollingEventService {
 
-    public fun add(longPollingEvent: LongPollingEvent<*>): Set<LongPollingEvent<*>>
+    public fun add(
+        longPollingEvent: LongPollingEvent<*>
+    ): Set<LongPollingEvent<*>>
 
-    public fun getByGroup(group: String): Set<LongPollingEvent<*>>
+    public fun getByGroup(
+        group: String,
+        recipient: String
+    ): Set<LongPollingEvent<*>>
 
-    public fun getByPrincipal(group: String, principal: String): Set<LongPollingEvent<*>>
+    public fun getByPrincipal(
+        group: String,
+        principal: String,
+        recipient: String
+    ): Set<LongPollingEvent<*>>
+
+    public fun getAvailableGroups(): Set<String>
 }

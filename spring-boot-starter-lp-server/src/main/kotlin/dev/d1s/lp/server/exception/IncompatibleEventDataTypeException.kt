@@ -16,5 +16,7 @@
 
 package dev.d1s.lp.server.exception
 
-public class IncompatibleEventDataTypeException :
-    RuntimeException("Event group must contain events with the same type of data.")
+import dev.d1s.lp.server.constant.INCOMPATIBLE_EVENT_DATA_TYPE_ERROR
+
+public object IncompatibleEventDataTypeException :
+    RuntimeException(INCOMPATIBLE_EVENT_DATA_TYPE_ERROR)
