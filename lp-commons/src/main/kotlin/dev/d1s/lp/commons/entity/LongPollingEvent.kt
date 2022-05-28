@@ -29,7 +29,13 @@ public data class LongPollingEvent<T : Any>(
 
     override fun toString(): String =
         "LongPollingEvent(" +
-                "id=$id, " +
+                "id=${
+                    if (::id.isInitialized) {
+                        id
+                    } else {
+                        "not set"
+                    }
+                }, " +
                 "group='$group', " +
                 "principal=$principal, " +
                 "satisfiedRecipients=$satisfiedRecipients, " +

@@ -35,7 +35,11 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
     private val log = logger()
 
     @Async
-    override fun <T : Any> publish(group: String, principal: String?, data: T): CompletableFuture<LongPollingEvent<T>> {
+    override fun <T : Any> publish(
+        group: String,
+        principal: String?,
+        data: T
+    ): CompletableFuture<LongPollingEvent<T>> {
         val event = LongPollingEvent(
             group,
             principal,
@@ -45,7 +49,7 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
         )
 
         log.lazyDebug {
-            "Publishing the event asynchronously: $event"
+            "publishing the event asynchronously: $event"
         }
 
         longPollingEventService.add(event)
