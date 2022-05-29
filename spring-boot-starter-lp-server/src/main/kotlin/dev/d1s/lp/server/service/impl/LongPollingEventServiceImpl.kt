@@ -55,10 +55,14 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
             "adding event $longPollingEvent"
         }
 
-        longPollingEvent.group.checkGroup()
+        val group = longPollingEvent.group
+
+        group.checkGroup()
 
         events.forEach {
-            if (it.data::class != longPollingEvent.data::class) {
+            if (it.group == group
+                && it.data::class != longPollingEvent.data::class
+            ) {
                 throw IncompatibleEventDataTypeException
             }
         }

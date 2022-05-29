@@ -1,4 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  dev.d1s.lp.server.autoconfiguration.AsyncAutoConfiguration,\
   dev.d1s.lp.server.autoconfiguration.ServerConfigurationPropertiesAutoConfiguration,\
   dev.d1s.lp.server.autoconfiguration.LongPollingAutoConfiguration
