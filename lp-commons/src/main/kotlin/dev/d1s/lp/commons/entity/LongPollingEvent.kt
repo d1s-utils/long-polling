@@ -21,7 +21,7 @@ import java.time.Instant
 public data class LongPollingEvent<T : Any>(
     val group: String,
     val principal: String?,
-    val data: T,
+    val data: T?,
     val satisfiedRecipients: MutableSet<String>,
     val timestamp: Instant,
 ) {

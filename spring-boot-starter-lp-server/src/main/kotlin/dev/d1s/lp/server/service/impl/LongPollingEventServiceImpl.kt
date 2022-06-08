@@ -60,10 +60,16 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
         group.checkGroup()
 
         events.forEach {
-            if (it.group == group
-                && it.data::class != longPollingEvent.data::class
-            ) {
-                throw IncompatibleEventDataTypeException
+            if (it.group == group) {
+                val thisData = it.data
+                val longPollingEventData = longPollingEvent.data
+
+                if (((thisData == null && longPollingEventData != null)
+                            || (thisData != null && longPollingEventData == null))
+                    || (thisData != null && thisData::class != longPollingEventData!!::class)
+                ) {
+                    throw IncompatibleEventDataTypeException
+                }
             }
         }
 
