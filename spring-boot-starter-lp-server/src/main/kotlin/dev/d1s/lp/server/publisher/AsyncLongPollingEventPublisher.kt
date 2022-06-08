@@ -24,6 +24,6 @@ public interface AsyncLongPollingEventPublisher {
     public fun <T : Any> publish(
         group: String,
         principal: String?,
-        data: T
+        data: T?
     ): CompletableFuture<LongPollingEvent<T>>
 }

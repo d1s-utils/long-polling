@@ -38,7 +38,7 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
     override fun <T : Any> publish(
         group: String,
         principal: String?,
-        data: T
+        data: T?
     ): CompletableFuture<LongPollingEvent<T>> {
         val event = LongPollingEvent(
             group,
