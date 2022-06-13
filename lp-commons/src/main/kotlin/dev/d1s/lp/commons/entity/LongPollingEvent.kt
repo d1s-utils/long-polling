@@ -18,7 +18,7 @@ package dev.d1s.lp.commons.entity
 
 import java.time.Instant
 
-public data class LongPollingEvent<T : Any>(
+public data class LongPollingEvent<T>(
     val group: String,
     val principal: String?,
     val data: T?,
