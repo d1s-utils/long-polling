@@ -20,7 +20,7 @@ import dev.d1s.lp.client.configuration.EventPollerConfiguration
 
 internal interface EventPoller {
 
-    suspend fun <T : Any> startPolling(
+    suspend fun <T> startPolling(
         group: String,
         principal: String?,
         type: Class<T>

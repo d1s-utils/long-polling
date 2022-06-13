@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
 
 public interface AsyncLongPollingEventPublisher {
 
-    public fun <T : Any> publish(
+    public fun <T> publish(
         group: String,
         principal: String?,
         data: T?

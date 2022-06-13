@@ -21,14 +21,14 @@ import dev.d1s.lp.client.listener.LongPollingEventListener
 
 internal interface LongPollingEventListenerRegistry {
 
-    operator fun <T : Any> set(
+    operator fun <T> set(
         group: String,
         principal: String?,
         type: Class<T>,
         listener: LongPollingEventListener<T>
     )
 
-    operator fun <T : Any> get(
+    operator fun <T> get(
         group: String,
         principal: String?,
         type: Class<T>

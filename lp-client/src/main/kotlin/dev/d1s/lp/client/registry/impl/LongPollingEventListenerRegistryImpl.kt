@@ -25,7 +25,7 @@ internal class LongPollingEventListenerRegistryImpl : LongPollingEventListenerRe
 
     private val listenerGroups: MutableSet<ListenerGroup<*>> = CopyOnWriteArraySet()
 
-    override operator fun <T : Any> set(
+    override operator fun <T> set(
         group: String,
         principal: String?,
         type: Class<T>,
@@ -38,7 +38,7 @@ internal class LongPollingEventListenerRegistryImpl : LongPollingEventListenerRe
         }
     }
 
-    override operator fun <T : Any> get(
+    override operator fun <T> get(
         group: String,
         principal: String?,
         type: Class<T>

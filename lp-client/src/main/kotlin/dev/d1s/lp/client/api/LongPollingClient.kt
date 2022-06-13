@@ -31,7 +31,7 @@ public class LongPollingClient {
     private val longPollingEventListenerConfigurer =
         longPollingEventListenerConfigurer(longPollingEventListenerRegistry, eventPoller)
 
-    public suspend fun <T : Any> onEvent(
+    public suspend fun <T> onEvent(
         group: String,
         principal: String?,
         type: Class<T>,
@@ -45,7 +45,7 @@ public class LongPollingClient {
         )
     }
 
-    public suspend inline fun <reified T : Any> onEvent(
+    public suspend inline fun <reified T> onEvent(
         group: String,
         principal: String? = null,
         noinline listener: LongPollingEventListener<T>

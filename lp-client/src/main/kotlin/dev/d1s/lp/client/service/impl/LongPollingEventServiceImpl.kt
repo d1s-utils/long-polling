@@ -45,7 +45,7 @@ internal class LongPollingEventServiceImpl(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override fun <T : Any> getEvents(
+    override fun <T> getEvents(
         group: String,
         principal: String?,
         recipient: String
@@ -77,7 +77,7 @@ internal class LongPollingEventServiceImpl(
         )
     }
 
-    private fun <T : Any> getByGroup(
+    private fun <T> getByGroup(
         group: String,
         recipient: String
     ): Set<LongPollingEvent<T>> =
@@ -89,7 +89,7 @@ internal class LongPollingEventServiceImpl(
             recipient
         )
 
-    private fun <T : Any> getByPrincipal(
+    private fun <T> getByPrincipal(
         group: String,
         principal: String,
         recipient: String
@@ -117,7 +117,7 @@ internal class LongPollingEventServiceImpl(
                 )
         ).resolve(path)
 
-    private fun <T : Any> getEvents(uri: URI, recipient: String): Set<LongPollingEvent<T>> {
+    private fun <T> getEvents(uri: URI, recipient: String): Set<LongPollingEvent<T>> {
         val (_, _, result) = Fuel.get(
             uri.toString(),
             listOf(

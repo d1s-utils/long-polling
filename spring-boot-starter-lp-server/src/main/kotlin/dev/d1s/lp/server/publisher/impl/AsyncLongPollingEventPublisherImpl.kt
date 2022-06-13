@@ -35,7 +35,7 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
     private val log = logger()
 
     @Async
-    override fun <T : Any> publish(
+    override fun <T> publish(
         group: String,
         principal: String?,
         data: T?

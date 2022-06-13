@@ -20,7 +20,7 @@ import dev.d1s.lp.client.listener.LongPollingEventListener
 
 internal interface LongPollingEventListenerConfigurer {
 
-    suspend fun <T : Any> configureListener(
+    suspend fun <T> configureListener(
         group: String,
         principal: String?,
         type: Class<T>,

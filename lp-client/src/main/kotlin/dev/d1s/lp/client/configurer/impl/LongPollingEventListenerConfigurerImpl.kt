@@ -26,7 +26,7 @@ internal class LongPollingEventListenerConfigurerImpl(
     private val eventPoller: EventPoller
 ) : LongPollingEventListenerConfigurer {
 
-    override suspend fun <T : Any> configureListener(
+    override suspend fun <T> configureListener(
         group: String,
         principal: String?,
         type: Class<T>,

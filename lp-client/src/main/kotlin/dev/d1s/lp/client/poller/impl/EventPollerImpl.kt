@@ -44,7 +44,7 @@ internal class EventPollerImpl(
 
     private val jobs = mutableSetOf<Job>()
 
-    override suspend fun <T : Any> startPolling(
+    override suspend fun <T> startPolling(
         group: String,
         principal: String?,
         type: Class<T>

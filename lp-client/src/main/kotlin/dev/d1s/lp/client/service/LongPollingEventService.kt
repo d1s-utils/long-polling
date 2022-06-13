@@ -20,7 +20,7 @@ import dev.d1s.lp.commons.entity.LongPollingEvent
 
 internal interface LongPollingEventService {
 
-    fun <T : Any> getEvents(
+    fun <T> getEvents(
         group: String,
         principal: String?,
         recipient: String
