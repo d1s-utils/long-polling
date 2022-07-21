@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-class LongPollingEventListenerRegistryImplTest {
+internal class LongPollingEventListenerRegistryImplTest {
 
     @Test
     fun `should add and get the event listener`() {

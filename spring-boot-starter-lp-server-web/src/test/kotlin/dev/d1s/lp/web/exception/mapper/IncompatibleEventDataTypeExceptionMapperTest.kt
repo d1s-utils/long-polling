@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,17 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.ContextConfiguration
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-@SpringBootTest
-@ContextConfiguration(classes = [IncompatibleEventDataTypeExceptionMapper::class])
-class IncompatibleEventDataTypeExceptionMapperTest {
+@SpringBootTest(
+    classes = [IncompatibleEventDataTypeExceptionMapper::class],
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
+)
+internal class IncompatibleEventDataTypeExceptionMapperTest {
 
-    @Autowired
-    private lateinit var mapper: IncompatibleEventDataTypeExceptionMapper
+    @set:Autowired
+    lateinit var mapper: IncompatibleEventDataTypeExceptionMapper
 
     @Test
     fun `should map IncompatibleEventDataTypeException to valid response`() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,21 @@ package dev.d1s.lp.server.listener
 
 import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.service.LongPollingEventService
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.event.EventListener
 
 internal class ApplicationEventListener {
 
-    @Autowired
-    private lateinit var longPollingEventService: LongPollingEventService
+    @set:Autowired
+    lateinit var longPollingEventService: LongPollingEventService
 
-    private val log = logger()
+    private val log = logging()
 
     @EventListener
     fun interceptEvent(longPollingEvent: LongPollingEvent<*>) {
-        log.lazyDebug {
-            "Handled an event from the Spring event bus: $longPollingEvent"
+        log.d {
+            "Handled event from Spring: $longPollingEvent"
         }
 
         longPollingEventService.add(longPollingEvent)

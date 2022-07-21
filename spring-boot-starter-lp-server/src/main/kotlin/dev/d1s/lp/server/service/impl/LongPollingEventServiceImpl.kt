@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
 import dev.d1s.lp.server.exception.UnavailableEventGroupException
 import dev.d1s.lp.server.properties.LongPollingEventServerConfigurationProperties
 import dev.d1s.lp.server.service.LongPollingEventService
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
@@ -35,24 +34,24 @@ import java.util.concurrent.CopyOnWriteArrayList
 @Service
 internal class LongPollingEventServiceImpl : LongPollingEventService, InitializingBean {
 
-    @Autowired
-    private lateinit var properties: LongPollingEventServerConfigurationProperties
+    @set:Autowired
+    lateinit var properties: LongPollingEventServerConfigurationProperties
 
-    @Autowired
-    private lateinit var longPollingServerConfigurer: LongPollingServerConfigurer
+    @set:Autowired
+    lateinit var longPollingServerConfigurer: LongPollingServerConfigurer
 
-    @Autowired
-    private lateinit var scheduler: ThreadPoolTaskScheduler
+    @set:Autowired
+    lateinit var scheduler: ThreadPoolTaskScheduler
 
     private val events = CopyOnWriteArrayList<LongPollingEvent<*>>()
 
     private lateinit var availableGroups: Set<String>
 
-    private val log = logger()
+    private val log = logging()
 
     override fun add(longPollingEvent: LongPollingEvent<*>): Set<LongPollingEvent<*>> {
-        log.lazyDebug {
-            "adding event $longPollingEvent"
+        log.d {
+            "Adding event $longPollingEvent."
         }
 
         val group = longPollingEvent.group
@@ -77,15 +76,15 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
 
         events += longPollingEvent
 
-        log.lazyDebug {
-            "added event $longPollingEvent, scheduling for deletion. " +
-                    "(event lifetime: ${properties.eventLifetime})"
+        log.d {
+            "Added event $longPollingEvent, scheduling for deletion " +
+                    "(event lifetime: ${properties.eventLifetime})."
         }
 
         scheduler.schedule(
             {
-                log.lazyDebug {
-                    "deleting event $longPollingEvent"
+                log.d {
+                    "Deleting event $longPollingEvent."
                 }
 
                 events.remove(longPollingEvent)
@@ -104,8 +103,8 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
         }.toSet().also {
             it.setSatisfiedRecipient(recipient)
 
-            log.lazyDebug {
-                "returning events for group $group and recipient $recipient: $it"
+            log.d {
+                "Returning events for group $group and recipient $recipient: $it."
             }
         }
     }
@@ -124,8 +123,8 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
         }.toSet().also {
             it.setSatisfiedRecipient(recipient)
 
-            log.lazyDebug {
-                "returning events for group $group, principal $principal and recipient $recipient: $it"
+            log.d {
+                "Returning events for group $group, principal $principal and recipient $recipient: $it."
             }
         }
     }
@@ -135,8 +134,8 @@ internal class LongPollingEventServiceImpl : LongPollingEventService, Initializi
     override fun afterPropertiesSet() {
         availableGroups = longPollingServerConfigurer.getAvailableGroups()
 
-        log.lazyDebug {
-            "initialized available long polling groups: $availableGroups"
+        log.d {
+            "Initialized available long polling groups: $availableGroups."
         }
     }
 

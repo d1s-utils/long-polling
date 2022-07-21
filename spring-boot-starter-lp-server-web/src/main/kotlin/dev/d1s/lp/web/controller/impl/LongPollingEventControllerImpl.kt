@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 internal class LongPollingEventControllerImpl : LongPollingEventController {
 
-    @Autowired
-    private lateinit var longPollingEventService: LongPollingEventService
+    @set:Autowired
+    lateinit var longPollingEventService: LongPollingEventService
 
     @Secured
     override fun getByGroup(

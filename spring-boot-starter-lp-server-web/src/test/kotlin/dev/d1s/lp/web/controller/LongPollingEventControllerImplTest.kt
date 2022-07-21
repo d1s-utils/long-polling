@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,16 +46,16 @@ import org.springframework.test.web.servlet.*
     controllers = [LongPollingEventControllerImpl::class],
     excludeAutoConfiguration = [SecurityAutoConfiguration::class]
 )
-class LongPollingEventControllerImplTest {
+internal class LongPollingEventControllerImplTest {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
+    @set:Autowired
+    lateinit var mockMvc: MockMvc
 
     @MockkBean
     private lateinit var longPollingEventService: LongPollingEventService
 
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    @set:Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @BeforeEach
     fun setup() {

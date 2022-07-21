@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import dev.d1s.advice.entity.ErrorResponseData
 import dev.d1s.advice.mapper.ExceptionMapper
 import dev.d1s.lp.server.exception.IncompatibleEventDataTypeException
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Component
 
+@Component
 internal class IncompatibleEventDataTypeExceptionMapper : ExceptionMapper {
 
     override fun map(exception: Exception): ErrorResponseData? =

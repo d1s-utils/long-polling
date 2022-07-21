@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import strikt.assertions.isEqualTo
 import strikt.assertions.isNull
 import java.time.Duration
 
-class EventPollerConfigurationTest {
+internal class EventPollerConfigurationTest {
 
     @Test
     fun `should return valid default values`() {

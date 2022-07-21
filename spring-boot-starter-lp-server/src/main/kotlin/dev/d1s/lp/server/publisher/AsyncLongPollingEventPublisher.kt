@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package dev.d1s.lp.server.publisher
 
 import dev.d1s.lp.commons.entity.LongPollingEvent
+import dev.d1s.teabag.data.jpa.Identifier
 import java.util.concurrent.CompletableFuture
 
 public interface AsyncLongPollingEventPublisher {
@@ -24,6 +25,12 @@ public interface AsyncLongPollingEventPublisher {
     public fun <T> publish(
         group: String,
         principal: String?,
+        data: T?
+    ): CompletableFuture<LongPollingEvent<T>>
+
+    public fun <T> publish(
+        group: String,
+        principal: Identifier?,
         data: T?
     ): CompletableFuture<LongPollingEvent<T>>
 }

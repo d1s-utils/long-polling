@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ContextConfiguration
 
-@SpringBootTest
+@SpringBootTest(
+    classes = [ApplicationEventListener::class],
+    webEnvironment = SpringBootTest.WebEnvironment.NONE
+)
 @ContextConfiguration(classes = [ApplicationEventListener::class])
-class ApplicationEventListenerTest {
+internal class ApplicationEventListenerTest {
 
-    @Autowired
-    private lateinit var applicationEventListener: ApplicationEventListener
+    @set:Autowired
+    lateinit var applicationEventListener: ApplicationEventListener
 
     @MockkBean(relaxed = true)
     private lateinit var longPollingEventService: LongPollingEventService

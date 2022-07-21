@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import io.mockk.coVerify
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 
-class LongPollingEventListenerConfigurerImplTest {
+internal class LongPollingEventListenerConfigurerImplTest {
 
     private val longPollingEventListenerRegistry =
         mockLongPollingEventListenerRegistry

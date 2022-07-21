@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Mikhail Titov and other contributors (if even present)
+ * Copyright 2022 Mikhail Titov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,20 +19,26 @@ package dev.d1s.lp.server.publisher.impl
 import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.lp.server.service.LongPollingEventService
-import dev.d1s.teabag.log4j.logger
-import dev.d1s.teabag.log4j.util.lazyDebug
+import dev.d1s.teabag.data.jpa.Identifier
+import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Component
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 
-// is 'open' really needed? I'm using a plugin for Kotlin support, but Intellij warns me anyway.
-internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPublisher {
+@Component
+internal class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPublisher {
 
-    @Autowired
-    private lateinit var longPollingEventService: LongPollingEventService
+    @set:Autowired
+    lateinit var longPollingEventService: LongPollingEventService
 
-    private val log = logger()
+    @set:Lazy
+    @set:Autowired
+    lateinit var asyncLongPollingEventPublisherImpl: AsyncLongPollingEventPublisherImpl
+
+    private val log = logging()
 
     @Async
     override fun <T> publish(
@@ -48,12 +54,15 @@ internal open class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPu
             Instant.now()
         )
 
-        log.lazyDebug {
-            "publishing the event asynchronously: $event"
+        log.d {
+            "Publishing event asynchronously: $event"
         }
 
         longPollingEventService.add(event)
 
         return CompletableFuture.completedFuture(event)
     }
+
+    override fun <T> publish(group: String, principal: Identifier?, data: T?) =
+        asyncLongPollingEventPublisherImpl.publish(group, principal?.asString, data)
 }
