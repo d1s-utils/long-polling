@@ -48,6 +48,8 @@ allprojects {
     }
 
     tasks.withType<Test> {
+        enabled = false
+
         useJUnitPlatform()
 
         testLogging {
