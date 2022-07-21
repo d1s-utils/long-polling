@@ -19,10 +19,8 @@ package dev.d1s.lp.server.publisher.impl
 import dev.d1s.lp.commons.entity.LongPollingEvent
 import dev.d1s.lp.server.publisher.AsyncLongPollingEventPublisher
 import dev.d1s.lp.server.service.LongPollingEventService
-import dev.d1s.teabag.data.jpa.Identifier
 import org.lighthousegames.logging.logging
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import java.time.Instant
@@ -33,10 +31,6 @@ internal class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPublish
 
     @set:Autowired
     lateinit var longPollingEventService: LongPollingEventService
-
-    @set:Lazy
-    @set:Autowired
-    lateinit var asyncLongPollingEventPublisherImpl: AsyncLongPollingEventPublisherImpl
 
     private val log = logging()
 
@@ -62,7 +56,4 @@ internal class AsyncLongPollingEventPublisherImpl : AsyncLongPollingEventPublish
 
         return CompletableFuture.completedFuture(event)
     }
-
-    override fun <T> publish(group: String, principal: Identifier?, data: T?) =
-        asyncLongPollingEventPublisherImpl.publish(group, principal?.asString, data)
 }

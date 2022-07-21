@@ -17,7 +17,6 @@
 package dev.d1s.lp.server.publisher
 
 import dev.d1s.lp.commons.entity.LongPollingEvent
-import dev.d1s.teabag.data.jpa.Identifier
 import java.util.concurrent.CompletableFuture
 
 public interface AsyncLongPollingEventPublisher {
@@ -25,12 +24,6 @@ public interface AsyncLongPollingEventPublisher {
     public fun <T> publish(
         group: String,
         principal: String?,
-        data: T?
-    ): CompletableFuture<LongPollingEvent<T>>
-
-    public fun <T> publish(
-        group: String,
-        principal: Identifier?,
         data: T?
     ): CompletableFuture<LongPollingEvent<T>>
 }
